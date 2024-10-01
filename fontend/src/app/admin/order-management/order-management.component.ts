@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Order } from '../../shared/models/Order';
-import { OrderService } from '../../services/order.service';
-
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-order-management',
@@ -9,17 +7,22 @@ import { OrderService } from '../../services/order.service';
   styleUrls: ['./order-management.component.css']
 })
 export class OrderManagementComponent implements OnInit {
-  orders: Order[] = [];
+  orders: any[] = [];
 
-  constructor(private orderService: OrderService) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.loadOrders();
+    this.getOrders();
   }
 
-  loadOrders() {
-    this.orderService.getAllOrders().subscribe(orders => {
-      this.orders = orders;
-    });
+  getOrders() {
+    this.http.get<any[]>('http://localhost:3000/api/orders').subscribe(
+      (response) => {
+        this.orders = response;
+      },
+      (error) => {
+        console.error('Error fetching orders:', error);
+      }
+    );
   }
 }
